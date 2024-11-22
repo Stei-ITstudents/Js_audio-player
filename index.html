@@ -1,94 +1,127 @@
-<!DOCTYPE html>
-<html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Player</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
+    <title>Multiple Audio Players</title>
     <link rel="icon" href="./assets/ico/itunes.ico" type="image/x-icon">
     <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: inherit;
+        }
+
         body {
             font-family: Roboto, sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             color: #554122;
-            background-color: #f0f0f0;
-            background-image: linear-gradient(to top, #fcf8f1 50%, #F7EDDE 50%);
+            background-image: linear-gradient(to right, #f7edde9d 33%, #ffffff 33%, #ffffff 68.5%, #f7edde80 68.5%);
+            padding-top: 20px;
+            box-sizing: border-box;
+        }
+
+        header {
+            position: fixed;
+            width: 100%;
+            background-color: #e7dac7;
+            color: #554122;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 3px 2px -2px rgba(0, 0, 0, 0.4);
+            border-radius: 5px;
+            top: 0;
+            right: 0;
+            left: 0;
+            z-index: 1000;
         }
 
         h1 {
-            font-family: Roboto;
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            color: #554122;
-            position: absolute;
-            top: 23%;
-            left: 50%; 
-            transform: translateX(-50%);
+            font-family: system-ui;
             padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-
+            font-size: 1.8rem;
+            color: #554122;
+            margin: 0;
         }
 
-        #audioPlayer {
+        .audioPlayer {
             display: flex;
             align-items: center;
-            gap: 10px;
-            background-color: #fff;
+            gap: 13px;
             padding: 10px;
             border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 100px;
+            width: 100%;
+            max-width: 500px;
         }
 
         button {
-            background: none;
-            border: none;
-            cursor: pointer;
+            all: unset;
+            aspect-ratio: 1;
+            font-family: Roboto, sans-serif;
             border-radius: 50%;
             width: 40px;
             height: 40px;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: color 0.3s, background-color 0.3s;
             color: #877964;
             background-color: rgba(0, 0, 0, 0.08);
+            transition: color 0.3s, background-color 0.3s;
+            -webkit-border-radius: 50%;
+        }
+        .speedBtn {
+            all: unset;
+            aspect-ratio: 1;
+            font-family: Roboto, sans-serif;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #877964;
+            background-color: rgba(0, 0, 0, 0.08);
+            transition: color 0.3s, background-color 0.3s;
+            -webkit-border-radius: 50%;
+            font-size: 1.1rem;
         }
 
         button:hover {
             color: #d5a660;
             background-color: rgba(0, 0, 0, 0.12);
             box-shadow: 0 0 2px #d5a660, 0 0 2px #d5a660, 0 0 3px #d5a660;
-            /* Neon light effect */
         }
 
-        #progressBar,
-        #volumeBar {
+        .progressBar,
+        .volumeBar {
             -webkit-appearance: none;
             appearance: none;
-            width: 300px;
             height: 4px;
             background: #d3d3d3;
             outline: none;
             border-radius: 2px;
         }
 
-        #progressBar:hover,
-        #volumeBar:hover {
+        .progressBar {
+            flex-grow: 1;
+        }
+
+        .volumeBar {
+            width: 60px;
+        }
+
+        .progressBar:hover,
+        .volumeBar:hover {
             box-shadow: 0 0 3px #d5a660, 0 0 2px #d5a660, 0 0 1px #d5a660;
-            /* Neon light effect */
         }
 
-        #volumeBar {
-            width: 75px;
-        }
-
-        #progressBar::-webkit-slider-thumb,
-        #volumeBar::-webkit-slider-thumb {
+        .progressBar::-webkit-slider-thumb,
+        .volumeBar::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
             width: 16px;
@@ -99,8 +132,8 @@
             cursor: pointer;
         }
 
-        #progressBar::-moz-range-thumb,
-        #volumeBar::-moz-range-thumb {
+        .progressBar::-moz-range-thumb,
+        .volumeBar::-moz-range-thumb {
             width: 16px;
             height: 16px;
             background-color: #d5a660;
@@ -109,27 +142,25 @@
             cursor: pointer;
         }
 
-        #progressBar:focus,
-        #volumeBar:focus {
+        .progressBar:focus,
+        .volumeBar:focus {
             outline: none;
         }
+
+        .muteBtn, 
+            .volumeBar {
+            display: flex;
+        }   
     </style>
 </head>
 
 <body>
-        <div>
-            <h1>Js Audio Player</h1>
-        </div>
-    <div id="audioPlayer">
-        <button id="playPauseBtn"></button>
-        <button id="speedBtn">1x</button>
-        <span id="currentTime">0:00</span>
-        <input type="range" id="progressBar" min="0" max="100" value="0">
-        <span id="duration">0:00</span>
-        <button id="muteBtn"></button>
-        <input type="range" id="volumeBar" min="0" max="1" step="0.1" value="1">
-    </div>
-    <audio id="audio" src="./assets/mp3/REVIVE Your Faith YOU ARE MIGHTY.mp3"></audio>
+    <header>
+        <h1>Multiple Audio Players</h1>
+    </header>
+    
+    <div id="playerContainer"></div>
+
     <script>
         const playIcon = `
             <svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 -960 960 960" width="35px" fill="currentColor">
@@ -155,75 +186,113 @@
             </svg>
         `;
 
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const speedBtn = document.getElementById('speedBtn');
-        const currentTimeSpan = document.getElementById('currentTime');
-        const durationSpan = document.getElementById('duration');
-        const progressBar = document.getElementById('progressBar');
-        const muteBtn = document.getElementById('muteBtn');
-        const volumeBar = document.getElementById('volumeBar');
-        const audio = document.getElementById('audio');
-
+        const playerContainer = document.getElementById('playerContainer');
+        const players = [];
         const speedLevels = [1, 1.2, 1.5, 1.7, 2];
-        let currentSpeedIndex = 0;
 
-        function formatTime(time) {
-            const minutes = Math.floor(time / 60);
-            const seconds = Math.floor(time % 60).toString().padStart(2, '0');
-            return `${minutes}:${seconds}`;
-        }
+        function createPlayer(index) {
+            const player = document.createElement('div');
+            player.className = 'audioPlayer';
+            player.innerHTML = `
+                <button class="playPauseBtn">${playIcon}</button>
+                <button class="speedBtn">1x</button>
+                <span class="currentTime">0:00</span>
+                <input type="range" class="progressBar" min="0" max="100" value="0">
+                <span class="duration">0:00</span>
+                <button class="muteBtn">${muteIcon}</button>
+                <input type="range" class="volumeBar" min="0" max="1" step="0.1" value="1">
+                <audio src="./assets/mp3/REVIVE Your Faith YOU ARE MIGHTY.mp3"></audio>
+            `;
+            playerContainer.appendChild(player);
 
-        function updateProgress() {
-            const progress = (audio.currentTime / audio.duration) * 100;
-            progressBar.value = progress;
-            currentTimeSpan.textContent = formatTime(audio.currentTime);
-            progressBar.style.background = `linear-gradient(to right, #d5a660 ${progressBar.value}%, #d3d3d3 ${progressBar.value}%)`;
-        }
+            const audio = player.querySelector('audio');
+            const playPauseBtn = player.querySelector('.playPauseBtn');
+            const speedBtn = player.querySelector('.speedBtn');
+            const currentTimeSpan = player.querySelector('.currentTime');
+            const durationSpan = player.querySelector('.duration');
+            const progressBar = player.querySelector('.progressBar');
+            const muteBtn = player.querySelector('.muteBtn');
+            const volumeBar = player.querySelector('.volumeBar');
 
-        playPauseBtn.innerHTML = playIcon;
-        muteBtn.innerHTML = muteIcon;
+            let currentSpeedIndex = 0;
 
-        playPauseBtn.addEventListener('click', () => {
-            if (audio.paused) {
-                audio.play();
-                playPauseBtn.innerHTML = pauseIcon;
-            } else {
-                audio.pause();
-                playPauseBtn.innerHTML = playIcon;
+            function formatTime(time) {
+                const minutes = Math.floor(time / 60);
+                const seconds = Math.floor(time % 60).toString().padStart(2, '0');
+                return `${minutes}:${seconds}`;
             }
-        });
 
-        speedBtn.addEventListener('click', () => {
-            currentSpeedIndex = (currentSpeedIndex + 1) % speedLevels.length;
-            const newSpeed = speedLevels[currentSpeedIndex];
-            audio.playbackRate = newSpeed;
-            speedBtn.textContent = `${newSpeed}x`;
-        });
+            function updateProgress() {
+                const progress = (audio.currentTime / audio.duration) * 100;
+                progressBar.value = progress;
+                currentTimeSpan.textContent = formatTime(audio.currentTime);
+                progressBar.style.background = `linear-gradient(to right, #d5a660 ${progressBar.value}%, #d3d3d3 ${progressBar.value}%)`;
+            }
 
-        muteBtn.addEventListener('click', () => {
-            audio.muted = !audio.muted;
-            muteBtn.innerHTML = audio.muted ? unmuteIcon : muteIcon;
-        });
+            playPauseBtn.addEventListener('click', () => {
+                players.forEach((p, i) => {
+                    if (i !== index) {
+                        p.audio.pause();
+                        p.playPauseBtn.innerHTML = playIcon;
+                    }
+                });
 
-        progressBar.addEventListener('input', () => {
-            const time = (progressBar.value / 100) * audio.duration;
-            audio.currentTime = time;
-            progressBar.style.background = `linear-gradient(to right, #d5a660 ${progressBar.value}%, #d3d3d3 ${progressBar.value}%)`;
-        });
+                if (audio.paused) {
+                    audio.play();
+                    playPauseBtn.innerHTML = pauseIcon;
+                } else {
+                    audio.pause();
+                    playPauseBtn.innerHTML = playIcon;
+                }
+            });
 
-        volumeBar.addEventListener('input', () => {
-            audio.volume = volumeBar.value;
-            audio.muted = false;
-            muteBtn.innerHTML = muteIcon;
-            const value = volumeBar.value * 100;
-            volumeBar.style.background = `linear-gradient(to right, #d5a660 ${value}%, #d3d3d3 ${value}%)`;
-        });
+            speedBtn.addEventListener('click', () => {
+                currentSpeedIndex = (currentSpeedIndex + 1) % speedLevels.length;
+                const newSpeed = speedLevels[currentSpeedIndex];
+                audio.playbackRate = newSpeed;
+                speedBtn.textContent = `${newSpeed}x`;
+            });
 
-        audio.addEventListener('loadedmetadata', () => {
-            durationSpan.textContent = formatTime(audio.duration);
-        });
+            muteBtn.addEventListener('click', () => {
+                audio.muted = !audio.muted;
+                muteBtn.innerHTML = audio.muted ? unmuteIcon : muteIcon;
+            });
 
-        audio.addEventListener('timeupdate', updateProgress);
+            progressBar.addEventListener('input', () => {
+                const time = (progressBar.value / 100) * audio.duration;
+                audio.currentTime = time;
+                progressBar.style.background = `linear-gradient(to right, #d5a660 ${progressBar.value}%, #d3d3d3 ${progressBar.value}%)`;
+            });
+
+            volumeBar.addEventListener('input', () => {
+                audio.volume = volumeBar.value;
+                audio.muted = false;
+                muteBtn.innerHTML = muteIcon;
+                const value = volumeBar.value * 100;
+                volumeBar.style.background = `linear-gradient(to right, #d5a660 ${value}%, #d3d3d3 ${value}%)`;
+            });
+
+            audio.addEventListener('loadedmetadata', () => {
+                durationSpan.textContent = formatTime(audio.duration);
+            });
+
+            audio.addEventListener('timeupdate', updateProgress);
+
+            return {
+                audio,
+                playPauseBtn,
+                speedBtn,
+                currentTimeSpan,
+                durationSpan,
+                progressBar,
+                muteBtn,
+                volumeBar
+            };
+        }
+
+        for (let i = 0; i <= 10; i++) {
+            players.push(createPlayer(i));
+        }
     </script>
 </body>
 
