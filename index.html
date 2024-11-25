@@ -10,13 +10,14 @@
         body {
             font-family: Roboto, sans-serif;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
             color: #554122;
             background-color: #f0f0f0;
-            background-image: linear-gradient(to top, #fcf8f1 50%, #F7EDDE 50%);
+            background-image: linear-gradient(to top, #fcf8f1 30%, #F7EDDE 70%);        
         }
 
         h1 {
@@ -34,7 +35,7 @@
 
         }
 
-        #audioPlayer {
+        .audioPlayer {
             display: flex;
             align-items: center;
             gap: 10px;
@@ -42,6 +43,7 @@
             padding: 10px;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
 
         button {
@@ -66,8 +68,8 @@
             /* Neon light effect */
         }
 
-        #progressBar,
-        #volumeBar {
+        .progressBar,
+        .volumeBar {
             -webkit-appearance: none;
             appearance: none;
             width: 300px;
@@ -77,18 +79,18 @@
             border-radius: 2px;
         }
 
-        #progressBar:hover,
-        #volumeBar:hover {
+        .progressBar:hover,
+        .volumeBar:hover {
             box-shadow: 0 0 3px #d5a660, 0 0 2px #d5a660, 0 0 1px #d5a660;
             /* Neon light effect */
         }
 
-        #volumeBar {
+        .volumeBar {
             width: 75px;
         }
 
-        #progressBar::-webkit-slider-thumb,
-        #volumeBar::-webkit-slider-thumb {
+        .progressBar::-webkit-slider-thumb,
+        .volumeBar::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
             width: 16px;
@@ -99,8 +101,8 @@
             cursor: pointer;
         }
 
-        #progressBar::-moz-range-thumb,
-        #volumeBar::-moz-range-thumb {
+        .progressBar::-moz-range-thumb,
+        .volumeBar::-moz-range-thumb {
             width: 16px;
             height: 16px;
             background-color: #d5a660;
@@ -109,8 +111,8 @@
             cursor: pointer;
         }
 
-        #progressBar:focus,
-        #volumeBar:focus {
+        .progressBar:focus,
+        .volumeBar:focus {
             outline: none;
         }
     </style>
@@ -120,16 +122,16 @@
         <div>
             <h1>Js Audio Player</h1>
         </div>
-    <div id="audioPlayer">
-        <button id="playPauseBtn"></button>
-        <button id="speedBtn">1x</button>
-        <span id="currentTime">0:00</span>
-        <input type="range" id="progressBar" min="0" max="100" value="0">
-        <span id="duration">0:00</span>
-        <button id="muteBtn"></button>
-        <input type="range" id="volumeBar" min="0" max="1" step="0.1" value="1">
-    </div>
-    <audio id="audio" src="./assets/mp3/REVIVE Your Faith YOU ARE MIGHTY.mp3"></audio>
+        <div class="audioPlayer">
+            <button class="playPauseBtn"></button>
+            <button class="speedBtn">1x</button>
+            <span class="currentTime">0:00</span>
+            <input type="range" class="progressBar" min="0" max="100" value="0">
+            <span class="duration">0:00</span>
+            <button class="muteBtn"></button>
+            <input type="range" class="volumeBar" min="0" max="1" step="0.1" value="1">
+            <audio class="audio" src="./assets/mp3/REVIVE Your Faith YOU ARE MIGHTY.mp3"></audio>
+        </div>
     <script>
         const playIcon = `
             <svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 -960 960 960" width="35px" fill="currentColor">
@@ -155,14 +157,17 @@
             </svg>
         `;
 
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const speedBtn = document.getElementById('speedBtn');
-        const currentTimeSpan = document.getElementById('currentTime');
-        const durationSpan = document.getElementById('duration');
-        const progressBar = document.getElementById('progressBar');
-        const muteBtn = document.getElementById('muteBtn');
-        const volumeBar = document.getElementById('volumeBar');
-        const audio = document.getElementById('audio');
+    const players = document.querySelectorAll('.audioPlayer');
+
+    players.forEach(player => {
+        const playPauseBtn = player.querySelector('.playPauseBtn');
+        const speedBtn = player.querySelector('.speedBtn');
+        const currentTimeSpan = player.querySelector('.currentTime');
+        const durationSpan = player.querySelector('.duration');
+        const progressBar = player.querySelector('.progressBar');
+        const muteBtn = player.querySelector('.muteBtn');
+        const volumeBar = player.querySelector('.volumeBar');
+        const audio = player.querySelector('.audio');
 
         const speedLevels = [1, 1.2, 1.5, 1.7, 2];
         let currentSpeedIndex = 0;
@@ -184,6 +189,15 @@
         muteBtn.innerHTML = muteIcon;
 
         playPauseBtn.addEventListener('click', () => {
+            players.forEach(p => {
+                const otherAudio = p.querySelector('.audio');
+                const otherPlayPauseBtn = p.querySelector('.playPauseBtn');
+                if (otherAudio !== audio) {
+                    otherAudio.pause();
+                    otherPlayPauseBtn.innerHTML = playIcon;
+                }
+            });
+
             if (audio.paused) {
                 audio.play();
                 playPauseBtn.innerHTML = pauseIcon;
@@ -224,6 +238,7 @@
         });
 
         audio.addEventListener('timeupdate', updateProgress);
+    });
     </script>
 </body>
 
